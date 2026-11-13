@@ -87,22 +87,71 @@
             fwrite(STDERR, 'cURL Error: ' . curl_error($ch) . PHP_EOL);
             exit(1);
         }   
-
-        echo $response . "<br>";
         
     
         $httpCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         // echo "HTTP Status: {$httpCode}" . PHP_EOL;
 
+        $machineReadings[] = json_decode($response, true)['data'];
+
+        $mainNode = $machineReadings[0]['node'];
+
+        while ( count($machineReadings) < 100 ) {
+            $ch = curl_init($urlTask);
+
+            // Using cURL for POST request to get the machine readings from the server
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => "command=getvalue,request={$requestTime}",
+                CURLOPT_HTTPHEADER => [
+                    'Content-type: text/plain; charset=utf-8',
+                    'Authorization: Bearer ' . $tokenValue, 
+                ],
+                CURLOPT_CONNECTTIMEOUT => 5,
+                CURLOPT_TIMEOUT => 15,
+            ]);
+
+            $response = curl_exec($ch);
+
+            $node = json_decode($response, true)['data']['node'];
+            $type = json_decode($response, true)['data']['type'];
+            $temp = json_decode($response, true)['data']['temp'];
+
+            if ($mainNode === $node && $type !== "unknown" && $temp >= 0 && $temp < 199) {
+                $machineReadings[] = json_decode($response, true)['data'];
+            }
+
+        }
+
+        $file = fopen("machinecsvfile.csv", "w") or die("Unable to open file!");
+        
+
+
+        // curl_setopt_array($ch, [
+        //    CURLOPT_RETURNTRANSFER => true,
+        //         CURLOPT_POST => true,
+        //         CURLOPT_POSTFIELDS => "command=end",
+        //         CURLOPT_HTTPHEADER => [
+        //             'Content-type: text/plain; charset=utf-8',
+        //             'Authorization: Bearer ' . $tokenValue, 
+        //         ],
+        //         CURLOPT_CONNECTTIMEOUT => 5,
+        //         CURLOPT_TIMEOUT => 15, 
+        // ]);
+
+        // $httpCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE); // Gets the http code for error handling
+        
+        // // This if block is for error handling
+        // if ($httpCode < 200 || $httpCode >= 300) {
+        //     fwrite(STDERR, "HTTP Status: {$httpCode}<br>" . PHP_EOL);
+        //     fwrite(STDERR, "Response Body: {$response}" . PHP_EOL);
+        //     exit(1);
+        // }
+
+        // echo "HTTP {$httpCode}";
 
     ?>
-    
-    <!-- <form method="get" action="http://10.101.0.1:10101/?token=renew">
-        Username: <input type="text" name="username" required><br>
-        Password: <input type="password" name="password" required><br>
-        <input type="submit" value="submit">
-    </form> -->
-
 
 </body>
 </html>
