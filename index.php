@@ -124,32 +124,57 @@
 
         }
 
+
         $file = fopen("machinecsvfile.csv", "w") or die("Unable to open file!");
+
+        fputcsv($file, ['Time', 'Node', 'Type', 'Temperature°C', '∆']);
+
+        $prevTemp = null;
+
+        foreach($machineReadings as $mr) {
+            $celsius = round(((int) $mr['temp'] - 32) * 5 / 9, 2);
+            
+            if ($prevTemp === null) {
+                $prevTemp = $mr['temp'];
+            } else {
+                $delta = $mr['temp'] - $prevTemp;
+                $prevTemp = $mr['temp'];
+            }
+            
+            fputcsv($file, [
+                $requestTime,
+                $mr['node'],
+                $mr['type'],
+                $celsius,
+                $delta ?? null
+            ]);
+
+        }
+
+        fclose($file);
+
+        curl_setopt_array($ch, [
+           CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => "command=end",
+                CURLOPT_HTTPHEADER => [
+                    'Content-type: text/plain; charset=utf-8',
+                    'Authorization: Bearer ' . $tokenValue, 
+                ],
+                CURLOPT_CONNECTTIMEOUT => 5,
+                CURLOPT_TIMEOUT => 15, 
+        ]);
+
+        $httpCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE); // Gets the http code for error handling
         
+        // This if block is for error handling
+        if ($httpCode < 200 || $httpCode >= 300) {
+            fwrite(STDERR, "HTTP Status: {$httpCode}<br>" . PHP_EOL);
+            fwrite(STDERR, "Response Body: {$response}" . PHP_EOL);
+            exit(1);
+        }
 
-
-        // curl_setopt_array($ch, [
-        //    CURLOPT_RETURNTRANSFER => true,
-        //         CURLOPT_POST => true,
-        //         CURLOPT_POSTFIELDS => "command=end",
-        //         CURLOPT_HTTPHEADER => [
-        //             'Content-type: text/plain; charset=utf-8',
-        //             'Authorization: Bearer ' . $tokenValue, 
-        //         ],
-        //         CURLOPT_CONNECTTIMEOUT => 5,
-        //         CURLOPT_TIMEOUT => 15, 
-        // ]);
-
-        // $httpCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE); // Gets the http code for error handling
-        
-        // // This if block is for error handling
-        // if ($httpCode < 200 || $httpCode >= 300) {
-        //     fwrite(STDERR, "HTTP Status: {$httpCode}<br>" . PHP_EOL);
-        //     fwrite(STDERR, "Response Body: {$response}" . PHP_EOL);
-        //     exit(1);
-        // }
-
-        // echo "HTTP {$httpCode}";
+        echo "HTTP {$httpCode}";
 
     ?>
 
