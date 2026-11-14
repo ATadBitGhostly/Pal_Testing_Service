@@ -214,11 +214,63 @@
         }
 
         // Task 5.2
-        $machineCSV = fopen("machinecsvfile.csv", "r") or die("Unable to open file!");
-        echo fread($machineCSV, filesize('machinecsvfile.csv'));
-        fclose($machineCSV)
+        // First going to get the data for the chart
+        $machineCSV = file('machinecsvfile.csv');
+        $headers = str_getcsv(array_shift($machineCSV));
+        $machinedata = [];
+
+        // $counter = 0;
+
+        foreach ($machineCSV as $machineLines) {
+            // echo $counter . " : " . $machineLines . "<br>";
+            // $counter++;
+
+            $data = array_combine($headers, str_getcsv($machineLines));
+            $machinedata[] = $data; 
+        }
+
+
+        // echo "<br><pre>";
+        // print_r($machinedata);
+
+        $dataPoints = [];
+
+        foreach($machinedata as $id => $data) {
+            // echo "<br>" . $id + 1 . " " . $data['Temperature°C'];
+            $dataPoints[] = ['y' => $data['Temperature°C'], 'label' => $id + 1];
+        }
+
+        // echo "<br><pre>";
+        // print_r($dataPoints);
+
 
     ?>
 
+<!-- This Column chart graph is taken from https://canvasjs.com/php-charts/column-chart/  -->
+<script>
+window.onload = function() {
+ 
+var chart = new CanvasJS.Chart("chartContainer", {
+	animationEnabled: true,
+	theme: "light2",
+	title:{
+		text: "Temperature Graph (°C)"
+	},
+	axisY: {
+		title: "Temperatures (in celsius)"
+	},
+	data: [{
+		type: "column",
+		yValueFormatString: "#,##0.## °C",
+		dataPoints: <?php echo json_encode($dataPoints, JSON_NUMERIC_CHECK); ?>
+	}]
+});
+chart.render();
+ 
+}
+</script>
+
+<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+<script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
 </body>
 </html>
