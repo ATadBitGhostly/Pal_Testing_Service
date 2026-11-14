@@ -12,11 +12,17 @@
 
     // task 3
         // initializing variables for url, username, and password
+        $credfile = file('credentials/userpass.txt');
+        $credarr = [];
+
+        foreach ($credfile as $line) {
+            $credarr[] =  trim($line);
+        }
 
         $url = "10.101.0.1:10101/?token=renew";
 
-        $uname = "reiniss";
-        $pw = "BarkBarkBark";
+        $uname = $credarr[0];
+        $pw = $credarr[1];
 
         $ch = curl_init($url);
 
@@ -154,15 +160,15 @@
         fclose($file);
 
         curl_setopt_array($ch, [
-           CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_POST => true,
-                CURLOPT_POSTFIELDS => "command=end",
-                CURLOPT_HTTPHEADER => [
-                    'Content-type: text/plain; charset=utf-8',
-                    'Authorization: Bearer ' . $tokenValue, 
-                ],
-                CURLOPT_CONNECTTIMEOUT => 5,
-                CURLOPT_TIMEOUT => 15, 
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => "command=end",
+            CURLOPT_HTTPHEADER => [
+                'Content-type: text/plain; charset=utf-8',
+                'Authorization: Bearer ' . $tokenValue, 
+            ],
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_TIMEOUT => 15, 
         ]);
 
         $httpCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE); // Gets the http code for error handling
@@ -175,6 +181,42 @@
         }
 
         echo "HTTP {$httpCode}";
+
+
+        // ----------- task 5
+        // Task 5.1
+        // So I got no idea if this works since it returns code 204 and I can't or rather don't know how to check the result.
+
+        $urlCSV = "http://10.101.0.1:10101/csv";
+        $destinationPath = "server_csv.csv";
+
+        $fileCSV = fopen($destinationPath, "w");
+
+
+        $ch = curl_init($urlCSV);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => [
+                "Authorization: Bearer " . $tokenValue,
+            ],
+            CURLOPT_FILE => $fileCSV,
+        ]);
+        curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        fclose($fileCSV);
+
+        if ($httpCode == 200) {
+            echo "<br>File downloaded successfully";
+        } else if ($httpCode == 204) {
+            echo "<br>Connection successful, but no content detected, Code {$httpCode}";
+        } else {
+            echo "<br>Error downloading file, Code {$httpCode}";
+        }
+
+        // Task 5.2
+        $machineCSV = fopen("machinecsvfile.csv", "r") or die("Unable to open file!");
+        echo fread($machineCSV, filesize('machinecsvfile.csv'));
+        fclose($machineCSV)
 
     ?>
 

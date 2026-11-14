@@ -1,5 +1,6 @@
 # Ignore folder "reinisss"
-reinisss/
+credentials/
 
 # Ignore .csv file
 machinecsvfile.csv
+server_csv.csv
