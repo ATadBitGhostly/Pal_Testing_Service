@@ -11,6 +11,7 @@ To host the index.php file, I used XAMPP Apache.
 For the test givers:
 OpenVPN was used as instructed
 Please follow the credentials folder instructions given above to make the code work.
+The credentials are the same ones that were given to me by you and the IP address should also be the same 
 And if I need to not make .gitignore file to ignore that folder please inform me.
 
 For the Bonus Questions check QuestionAnswers.md file and check WhatWasUsed.md for what was used in this test completion.
