@@ -3,20 +3,20 @@
 So for the resources I have used:
 
 For PHP functions and cURL:
-[text](https://www.w3schools.com/php/default.asp)
-[text](https://www.php.net/manual/en/index.php)
+[https://www.w3schools.com/php/default.asp](https://www.w3schools.com/php/default.asp)
+[https://www.php.net/manual/en/index.php](https://www.php.net/manual/en/index.php)
 
 Fahrenheit to Celsius formula:
-[text](https://www.geeksforgeeks.org/php/php-program-to-convert-fahrenheit-to-celsius/)
+[https://www.geeksforgeeks.org/php/php-program-to-convert-fahrenheit-to-celsius/](https://www.geeksforgeeks.org/php/php-program-to-convert-fahrenheit-to-celsius/)
 
 Regex:
-[text](https://regexr.com)
+[https://regexr.com](https://regexr.com)
 
 Bearer Token explanation and how to use:
-[text](https://www.simplified.guide/php-curl/bearer-token-use)
+[https://www.simplified.guide/php-curl/bearer-token-use](https://www.simplified.guide/php-curl/bearer-token-use)
 
 What is 'ŗ':
-[text](https://lv.wikipedia.org/wiki/Ŗ)
+[https://lv.wikipedia.org/wiki/Ŗ](https://lv.wikipedia.org/wiki/Ŗ)
 
 <title>AI - spooky territory</title>
 AI helped me with bug fixes, what went wrong and explain task more in depth.
